@@ -1,6 +1,8 @@
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { registerRequest } from '../models/register.model';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { registerReponse, registerRequest } from '../models/register.model';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -11,10 +13,16 @@ export class RegisterComponent implements OnInit {
 
   registerForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService
+  ) {
 
     this.registerForm = this.fb.group({
-
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+      invitation_code: ['', Validators.required]
     })
   }
 
@@ -22,15 +30,22 @@ export class RegisterComponent implements OnInit {
   }
 
   registerSendRequest(){
-    if(this.registerForm.valid)
-    {
-      const registerRequest: registerRequest = this.registerForm.value;
-      console.log('register request', registerRequest);
-      //Llamar al backend
-    }else{
-      console.log('Formulario invialido');
-      this.registerForm.markAllAsTouched();
+    if(this.registerForm.invalid){
+      this.registerForm.markAsTouched();
+      return;
     }
+
+    const registerRequest: registerRequest = this.registerForm.value;
+
+    this.authService.register(registerRequest).subscribe({
+      next: (response: registerReponse) => {
+        console.log('registro exitoso: ', response);
+      },
+      error: (err: HttpErrorResponse) => {
+        console.log(err.error.message);
+        console.log('Error en el registro')
+      }
+    });
 
   }
 

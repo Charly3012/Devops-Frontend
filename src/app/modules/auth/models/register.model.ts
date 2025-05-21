@@ -4,3 +4,10 @@ export interface registerRequest {
   password: string,
   invitation_code: string
 }
+
+
+export interface registerReponse{
+  id: number,
+  name: string,
+  email: string
+}
