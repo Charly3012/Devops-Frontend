@@ -1,86 +1,145 @@
-/* Contenedor general para la estructura */
+// /* Contenedor general para la estructura */
+// .layout-container {
+//   display: flex;
+//   flex-direction: column;
+//   height: 100vh;
+
+// }
+
+
+
+// /* Estilo para la sección de contenido (Main y Sidebar) */
+// .content-wrapper {
+//   display: flex;
+//   flex: 1;
+//   height: 100%;
+
+//   /* Ocupa toda la altura restante */
+// }
+
+// /* Sidebar (a la izquierda) */
+// app-sidebar {
+//   flex: .4;
+//   /* Sidebar ocupa menos espacio */
+//   padding: 15px;
+//   background-color: var(--background-color);
+//   overflow-y: auto;
+//   position: relative;
+//   border-right: 1px solid white;
+
+//   /* Necesario para posicionar el pseudo-elemento */
+//   /* Permite scroll
+//   en el Sidebar si hay más contenido */
+// }
+
+// /* Main Area */
+// .main {
+//   flex: 3;
+//   /* Hace que Main ocupe más espacio */
+//   padding: 20px;
+//   background-color: var(--background-color);
+//   /* Color de fondo claro */
+//   overflow-y: auto;
+//   /* Permite hacer scroll si es necesario */
+//   margin-left: 10px;
+//   margin-bottom: 5%;
+//   /* Espacio entre Main y Sidebar */
+//   position: relative;
+// }
+
+// /* Estilo para el Header y Footer */
+// app-header,
+// app-footer {
+//   width: 100%;
+//   background-color: var(--background-color);
+//   color: var(--background-color);
+//   padding: 0% 0;
+//   text-align: center;
+//   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+// }
+
+// /* Footer: Opcional, con el mismo estilo de Header */
+// app-footer {
+//   background-color: #333;
+//   color: var(--font-color);
+// }
+
+// /* Responsividad para la línea vertical */
+// @media (max-width: 768px) {
+//   app-sidebar::after {
+//     width: 1px;
+//     /* Reduce el grosor en pantallas medianas */
+//   }
+// }
+
+// @media (max-width: 480px) {
+//   app-sidebar {
+//     flex: 0.6;
+//     /* Sidebar ocupa un 60% en pantallas pequeñas */
+//     padding: 10px;
+//   }
+
+//   app-sidebar::after {
+//     display: none;
+//     /* Oculta la línea en pantallas muy pequeñas */
+//   }
+// }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .layout-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-
+  min-height: 100vh;
 }
 
+app-header {
+  flex-shrink: 0;
+  height: 60px;
+  background: #f8f8f8;
+  border-bottom: 1px solid #ddd;
+  z-index: 1001;
+}
 
-
-/* Estilo para la sección de contenido (Main y Sidebar) */
 .content-wrapper {
-  display: flex;
   flex: 1;
-  height: 100%;
-
-  /* Ocupa toda la altura restante */
-}
-
-/* Sidebar (a la izquierda) */
-app-sidebar {
-  flex: .4;
-  /* Sidebar ocupa menos espacio */
-  padding: 15px;
-  background-color: var(--background-color);
-  overflow-y: auto;
-  position: relative;
-  border-right: 1px solid white;
-
-  /* Necesario para posicionar el pseudo-elemento */
-  /* Permite scroll
-  en el Sidebar si hay más contenido */
-}
-
-/* Main Area */
-.main {
-  flex: 3;
-  /* Hace que Main ocupe más espacio */
-  padding: 20px;
-  background-color: var(--background-color);
-  /* Color de fondo claro */
-  overflow-y: auto;
-  /* Permite hacer scroll si es necesario */
-  margin-left: 10px;
-  margin-bottom: 5%;
-  /* Espacio entre Main y Sidebar */
+  display: flex;
+  overflow: hidden;
   position: relative;
 }
 
-/* Estilo para el Header y Footer */
-app-header,
-app-footer {
-  width: 100%;
-  background-color: var(--background-color);
-  color: var(--background-color);
-  padding: 0% 0;
-  text-align: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+app-side-bar {
+  width: 250px;
+  flex-shrink: 0;
+  transition: none;
 }
 
-/* Footer: Opcional, con el mismo estilo de Header */
-app-footer {
-  background-color: #333;
-  color: var(--font-color);
-}
-
-/* Responsividad para la línea vertical */
+/* En móvil: sidebar siempre visible pero flotando */
 @media (max-width: 768px) {
-  app-sidebar::after {
-    width: 1px;
-    /* Reduce el grosor en pantallas medianas */
+  app-side-bar {
+    position: fixed;
+    top: 60px; /* debajo del header */
+    left: 0;
+    width: 250px;
+    z-index: 1000;
   }
+
 }
 
-@media (max-width: 480px) {
-  app-sidebar {
-    flex: 0.6;
-    /* Sidebar ocupa un 60% en pantallas pequeñas */
-    padding: 10px;
-  }
+.main {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background: #fff;
+}
 
-  app-sidebar::after {
-    display: none;
-    /* Oculta la línea en pantallas muy pequeñas */
-  }
+app-footer {
+  flex-shrink: 0;
+  height: 40px;
+  background: #f8f8f8;
+  border-top: 1px solid #ddd;
 }
