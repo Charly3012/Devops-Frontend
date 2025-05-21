@@ -7,6 +7,7 @@ import { SideBarComponent } from './components/side-bar/side-bar.component';
 import { MainComponent } from './layout/main/main.component';
 import { RouterModule } from '@angular/router';
 import { AuthLayoutComponent } from './layout/auth-layout/auth-layout.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 
