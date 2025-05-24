@@ -12,7 +12,7 @@ const routes: Routes = [
       {
         path: '',
         redirectTo: 'home',
-        pathMatch: 'full'  // importante que sea full para redirigir solo cuando la ruta sea exactamente /menu
+        pathMatch: 'full'  
       },
       {
         path: 'home',

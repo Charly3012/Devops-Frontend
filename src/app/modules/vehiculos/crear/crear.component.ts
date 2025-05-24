@@ -18,7 +18,7 @@ export class CrearComponent implements OnInit {
   modoEdicion = false;
   vehiculoEditando: any = null;
   previewFoto: string | null = null;
-  originalVehicles: any[] = []; // copia sin filtrar
+  originalVehicles: any[] = []; 
   searchTerm: string = '';
   orderDirection: 'asc' | 'desc' = 'asc';
 
@@ -49,8 +49,8 @@ export class CrearComponent implements OnInit {
       console.log('RESPUESTA PAGINADA:', res);
       this.originalVehicles = res.data;
       this.vehicles         = res.data;
-      this.meta             = res;                // <— YA NO res.meta
-      this.currentPage      = res.current_page;   // <— YA NO res.meta.current_page
+      this.meta             = res;                
+      this.currentPage      = res.current_page;   
       this.filterVehicles();
     },
     error: (err) => console.error('Error al cargar vehículos:', err)
@@ -70,7 +70,6 @@ export class CrearComponent implements OnInit {
     );
   }
 
-  // Si ya hay orden, reaplícalo
   if (this.orderDirection) {
     filtered = filtered.sort((a, b) => {
       const dateA = new Date(a.purchase_date).getTime();
