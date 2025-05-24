@@ -7,6 +7,11 @@ export interface registerRequest {
 
 
 export interface registerReponse{
+  data: dataRegister,
+  status: number
+}
+
+interface dataRegister{
   id: number,
   name: string,
   email: string
