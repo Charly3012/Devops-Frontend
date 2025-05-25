@@ -32,17 +32,14 @@ export class AuthService {
     sessionStorage.setItem('token', token);
   }
 
-  getToken():string | void {
+  getToken():string | null {
     const token = sessionStorage.getItem('token');
 
     if(token){
       return token;
     }
+    return null;
 
-    this.toastService.error('Intente iniciar sesión nuevamente','Error con su sesión');
-    setTimeout(() => {
-        this.logOut();
-      }, 2500);
   }
 
   logOut(){

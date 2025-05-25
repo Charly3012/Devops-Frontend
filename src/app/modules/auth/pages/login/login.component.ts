@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Modal } from 'flowbite';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../services/auth.service';
 import { loginRequest, loginResponse} from '../../models/login.model';
@@ -22,7 +22,8 @@ export class LoginComponent implements OnInit, AfterViewInit{
     private fb: FormBuilder,
     private authService: AuthService,
     private toastService: ToastrService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -31,6 +32,11 @@ export class LoginComponent implements OnInit, AfterViewInit{
    }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+    if (params['redirected'] === 'true') {
+      this.toastService.info('Inicie sesión para acceder a todas las funcionalidades', 'Usuario no autenticado');
+    }
+  });
   }
 
   ngAfterViewInit(): void {
