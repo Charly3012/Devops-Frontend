@@ -101,7 +101,7 @@ export class GestionComponent implements OnInit {
     const values = this.form.value;
 
     const obs = this.modoEdicion
-      ? this.driverService.update(this.conductorEditando.id, values)
+      ? this.driverService.update(this.conductorEditando.id_driver, values)
       : this.driverService.create(values);
 
     obs.subscribe({
@@ -118,7 +118,7 @@ export class GestionComponent implements OnInit {
 
   openDropdown(driver: any) {
     this.dropdownOpen =
-      this.dropdownOpen === driver.id ? null : driver.id;
+      this.dropdownOpen === driver.id_driver ? null : driver.id_driver;
   }
 
   @HostListener('document:click', ['$event'])
@@ -164,4 +164,13 @@ export class GestionComponent implements OnInit {
     this.conductorEditando = null;
     this.form.reset();
   }
+
+  sortByDate(order: 'asc' | 'desc'): void {
+  this.drivers.sort((a, b) => {
+    const dateA = new Date(a.system_entry_date).getTime();
+    const dateB = new Date(b.system_entry_date).getTime();
+    return order === 'asc' ? dateA - dateB : dateB - dateA;
+  });
+}
+
 }

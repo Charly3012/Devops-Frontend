@@ -22,7 +22,7 @@ export class DriverService {
   }
 
   update(id: number, driverData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}?_method=PUT`, driverData); // simulando PUT para Laravel
+    return this.http.put(`${this.apiUrl}/${id}`, driverData); // simulando PUT para Laravel
   }
 
   delete(id: number): Observable<any> {
