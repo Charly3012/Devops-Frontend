@@ -1,0 +1,248 @@
+<div>
+    <h1 class="text-2xl font-bold text-center">Rutas de Envíos</h1>
+</div>
+  
+<div class="mt-10 md:mx-4 lg:mx-10 relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <tr>
+            <th scope="col" class="px-6 py-3">ID</th>
+            <th scope="col" class="px-0 py-3">ID Asignación</th>
+            <th scope="col" class="px-6 py-3">Nombre</th>
+            <th scope="col" class="px-6 py-3">Fecha recorrido</th>
+            <th scope="col" class="px-6 py-3">Estado</th>
+            <th scope="col" class="px-6 py-3">Origen (Lat, Lng)</th>
+            <th scope="col" class="px-6 py-3">Destino (Lat, Lng)</th>
+            <th scope="col" class="px-6 py-3">Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let ruta of rutas" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
+            <td class="px-6 py-4">{{ ruta.id }}</td>
+            <td class="px-6 py-4">{{ ruta.id_assignment }}</td>
+            <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ ruta.name }}</td>
+            <td class="px-6 py-4">{{ ruta.route_date }}</td>
+            <td class="px-6 py-4">
+            <span *ngIf="ruta.was_successful === 0" class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                Exitosa
+            </span>
+            <span *ngIf="ruta.was_successful === 1" class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
+                Fallida
+            </span>
+            <span *ngIf="ruta.was_successful === null || ruta.was_successful === undefined" class="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
+                N/A
+            </span>
+            </td>
+            <td class="px-6 py-4 text-sm">
+            <div>{{ ruta.start_latitude }}</div>
+            <div>{{ ruta.start_longitude }}</div>
+            </td>
+            <td class="px-6 py-4 text-sm">
+            <div>{{ ruta.end_latitude || 'N/A' }}</div>
+            <div>{{ ruta.end_longitude || 'N/A' }}</div>
+            </td>
+            <td class="px-6 py-4 flex flex-col gap-y-5 items-start">
+            <button 
+                (click)="openEditModal(ruta)" 
+                data-modal-target="editModal" 
+                data-modal-toggle="editModal" 
+                class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                Editar
+            </button>
+            <button 
+                (click)="deleteRuta(ruta.id)" 
+                class="font-medium text-red-600 dark:text-red-500 hover:underline">
+                Eliminar
+            </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+  
+<!-- Modal de Edición -->
+<div id="editModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full bg-gray-900 bg-opacity-50" (click)="closeModal()">
+    <div class="relative p-4 w-full max-w-2xl max-h-full" (click)="$event.stopPropagation()">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <!-- Modal header -->
+        <div class="flex items-between justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+            Editar Ruta
+            </h3>
+            <button 
+            type="button" 
+            (click)="closeModal()"
+            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+            <span class="sr-only">Cerrar modal</span>
+            </button>
+        </div>
+        <!-- Modal body -->
+        <div class="p-4 md:p-5 space-y-3">
+            <form (ngSubmit)="updateRuta()">
+            <div class="grid gap-4 mb-4 grid-cols-2">
+                <!-- ID (readonly) -->
+                <div class="col-span-2 sm:col-span-1">
+                <label for="id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ID</label>
+                <input 
+                    type="number" 
+                    name="id" 
+                    id="id" 
+                    [(ngModel)]="selectedRuta.id"
+                    readonly
+                    class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white cursor-not-allowed" 
+                    placeholder="ID">
+                </div>
+                
+                <!-- ID Assignment -->
+                <div class="col-span-2 sm:col-span-1">
+                <label for="id_assignment" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ID Asignación</label>
+                <input
+                    type="number" 
+                    name="id_assignment" 
+                    id="id_assignment" 
+                    [(ngModel)]="selectedRuta.id_assignment"
+                    readonly
+                    class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white cursor-not-allowed" 
+                    placeholder="ID Assignment">
+                </div>
+
+                <!-- Nombre de la ruta -->
+                <div class="col-span-2">
+                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre de la ruta</label>
+                <input 
+                    type="text" 
+                    name="name" 
+                    id="name" 
+                    [(ngModel)]="selectedRuta.name"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                    placeholder="Nombre de la ruta" 
+                    required="">
+                </div>
+
+                <!-- Fecha de ruta -->
+                <div class="col-span-2 sm:col-span-1">
+                <label for="route_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha de ruta</label>
+                <input 
+                    type="date" 
+                    name="route_date" 
+                    id="route_date" 
+                    [(ngModel)]="selectedRuta.route_date"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                    required="">
+                </div>
+
+                <!-- Was Successful -->
+                <div class="col-span-2 sm:col-span-1">
+                <label for="was_successful" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">¿Fue exitosa?</label>
+                <select 
+                    name="was_successful" 
+                    id="was_successful" 
+                    [(ngModel)]="selectedRuta.was_successful"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                    <option value="">Seleccionar...</option>
+                    <option value="0">Sí</option>
+                    <option value="1">No</option>
+                </select>
+                </div>
+
+                <!-- Latitud de inicio -->
+                <div class="col-span-2 sm:col-span-1">
+                <label for="start_latitude" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Latitud de inicio</label>
+                <input 
+                    type="number" 
+                    name="start_latitude" 
+                    id="start_latitude" 
+                    [(ngModel)]="selectedRuta.start_latitude"
+                    step="any"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                    placeholder="Latitud de inicio" 
+                    required="">
+                </div>
+
+                <!-- Longitud de inicio -->
+                <div class="col-span-2 sm:col-span-1">
+                <label for="start_longitude" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Longitud de inicio</label>
+                <input 
+                    type="number" 
+                    name="start_longitude" 
+                    id="start_longitude" 
+                    [(ngModel)]="selectedRuta.start_longitude"
+                    step="any"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                    placeholder="Longitud de inicio" 
+                    required="">
+                </div>
+
+                <!-- Latitud de fin -->
+                <div class="col-span-2 sm:col-span-1">
+                <label for="end_latitude" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Latitud de fin</label>
+                <input 
+                    type="number" 
+                    name="end_latitude" 
+                    id="end_latitude" 
+                    [(ngModel)]="selectedRuta.end_latitude"
+                    step="any"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                    placeholder="Latitud de fin">
+                </div>
+
+                <!-- Longitud de fin -->
+                <div class="col-span-2 sm:col-span-1">
+                <label for="end_longitude" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Longitud de fin</label>
+                <input 
+                    type="number" 
+                    name="end_longitude" 
+                    id="end_longitude" 
+                    [(ngModel)]="selectedRuta.end_longitude"
+                    step="any"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                    placeholder="Longitud de fin">
+                </div>
+
+                <!-- Descripción del problema -->
+                <div class="col-span-2">
+                <label for="problem_description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Descripción del problema</label>
+                <textarea 
+                    name="problem_description" 
+                    id="problem_description" 
+                    [(ngModel)]="selectedRuta.problem_description"
+                    rows="3"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                    placeholder="Describe cualquier problema encontrado..."></textarea>
+                </div>
+
+                <!-- Comentarios -->
+                <div class="col-span-2">
+                <label for="comments" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comentarios</label>
+                <textarea 
+                    name="comments" 
+                    id="comments" 
+                    [(ngModel)]="selectedRuta.comments"
+                    rows="3"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                    placeholder="Comentarios adicionales..."></textarea>
+                </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="flex items-center p-4 md:pt-4 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button 
+                type="submit"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Guardar cambios
+                </button>
+                <button 
+                type="button"
+                (click)="closeModal()"
+                class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                Cancelar
+                </button>
+            </div>
+            </form>
+        </div>
+        </div>
+    </div>
+</div>

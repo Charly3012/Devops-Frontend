@@ -18,7 +18,7 @@ const routes: Routes = [
   {
     path: 'menu',
     component: MainComponent,
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     children: [
       {
         path: '',
@@ -28,6 +28,10 @@ const routes: Routes = [
       {
         path: 'home',
         loadChildren: () => import('./modules/home/home.module').then(m => m.HomeModule)
+      },
+      {
+        path: 'rutas',
+        loadChildren: () => import('./modules/rutas/rutas.module').then(m => m.RutasModule)
       }
     ]
   },
