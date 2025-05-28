@@ -153,22 +153,45 @@ export class CrearComponent implements OnInit {
     })
   }
 
+
+  // -------------------------- Modal Eliminar ------------------------------------- 
+  deleteId: number | null = null;
+
+  openDeleteModal(id: number): void {
+    this.deleteId = id;
+    const modalElement = document.getElementById('deleteModal');
+    if (modalElement) {
+      modalElement.classList.remove('hidden');
+    }
+  }
+
+  closeDeleteModal(): void {
+    const modalElement = document.getElementById('deleteModal');
+    if (modalElement) {
+      modalElement.classList.add('hidden');
+    }
+    this.deleteId = null;
+  }
+
+  confirmDelete(): void {
+    if (this.deleteId !== null) {
+      this.deleteRuta(this.deleteId);
+      this.closeDeleteModal();
+    }
+  }
+
   // Eliminar una ruta
   deleteRuta(id: number):void {
-    // this.toastService.success("Eliminacion exitosa");
-    if(confirm('Estas seguro de eliminar')){
-      this.rutasService.deleteRuta(id).subscribe({
-        next: () => {
-          this.toastService.success("Ruta eliminada exitosamente");
-          this.loadRutas();
-        },
-        error: (error) => {
-          this.toastService.error("Error al eliminar ruta");
-          this.error = error;
-          console.error('Error al eliminar ruta:', error);
-        }
-      })
-    }
+    this.rutasService.deleteRuta(id).subscribe({
+      next: () => {
+        this.toastService.success("Ruta eliminada exitosamente");
+        this.loadRutas();
+      },
+      error: (error) => {
+        this.toastService.error("Error al eliminar ruta");
+        this.error = error;
+      }
+    })
   }
 
 }
