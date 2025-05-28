@@ -3,6 +3,7 @@ import { RutasService } from '../services/rutas.service';
 import { Ruta } from '../models/ruta.model';
 import { ToastrService } from 'ngx-toastr';
 import type { ModalInterface } from 'flowbite';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-crear',
@@ -39,11 +40,11 @@ export class CrearComponent implements OnInit {
 
   modal: ModalInterface | null = null;
 
-  openEditModal(ruta: any): void {
+  openEditModal(ruta: Ruta): void {
     // Crear una copia de la ruta para evitar modificar el original
     this.selectedRuta = { ...ruta };
     
-    // Mostrar el modal con transición suave
+    // Mostrar el modal
     const modalElement = document.getElementById('editModal');
     if (modalElement) {
       modalElement.classList.remove('hidden');
@@ -67,23 +68,19 @@ export class CrearComponent implements OnInit {
       }, 300); // Coincide con la transición CSS
     }
   }
-  // closeModalOnBackdrop(event: Event): void {
-  //   // Solo cerrar si el clic fue en el backdrop (no en el contenido del modal)
-  //   if (event.target === event.currentTarget) {
-  //     this.closeModal();
-  //   }
-  // }
 
-  updateRuta(): void {
+  updateRuta(form?: NgForm): void {
+    if (form && form.invalid) {
+      this.toastService.error("Por favor corrige los errores del formulario.");
+      return;
+    }
     // Aquí implementas la lógica para actualizar la ruta
     console.log('Actualizando ruta:', this.selectedRuta);
-    
     // Ejemplo de actualización local
     const index = this.rutas.findIndex(r => r.id === this.selectedRuta.id);
     if (index !== -1) {
       this.rutas[index] = { ...this.selectedRuta };
     }
-
     // Actualizar en el backend
     this.rutasService.updateRuta(this.selectedRuta.id, this.selectedRuta).subscribe(
       response => {
@@ -95,7 +92,6 @@ export class CrearComponent implements OnInit {
         console.error('Error al actualizar la ruta')
       }
     )
-
     // Cerrar el modal
     this.closeModal();
   }

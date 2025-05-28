@@ -82,7 +82,7 @@
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5 space-y-3">
-            <form (ngSubmit)="updateRuta()">
+            <form #editForm="ngForm" (ngSubmit)="updateRuta(editForm)">
             <div class="grid gap-4 mb-4 grid-cols-2">
                 <!-- ID (readonly) -->
                 <div class="col-span-2 sm:col-span-1">
@@ -118,9 +118,15 @@
                     name="name" 
                     id="name" 
                     [(ngModel)]="selectedRuta.name"
+                    #nameCtrl="ngModel"
+                    required
+                    maxlength="255"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
-                    placeholder="Nombre de la ruta" 
-                    required="">
+                    placeholder="Nombre de la ruta">
+                <div *ngIf="nameCtrl.invalid && (nameCtrl.dirty || nameCtrl.touched)" class="text-red-500 text-xs mt-1">
+                    <div *ngIf="nameCtrl.errors?.['required']">El nombre es obligatorio.</div>
+                    <div *ngIf="nameCtrl.errors?.['maxlength']">Máximo 255 caracteres.</div>
+                </div>
                 </div>
 
                 <!-- Fecha de ruta -->
@@ -131,8 +137,13 @@
                     name="route_date" 
                     id="route_date" 
                     [(ngModel)]="selectedRuta.route_date"
+                    #routeDateCtrl="ngModel"
+                    required
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
-                    required="">
+                    >
+                <div *ngIf="routeDateCtrl.invalid && (routeDateCtrl.dirty || routeDateCtrl.touched)" class="text-red-500 text-xs mt-1">
+                    <div *ngIf="routeDateCtrl.errors?.['required']">La fecha es obligatoria.</div>
+                </div>
                 </div>
 
                 <!-- Was Successful -->
@@ -142,6 +153,7 @@
                     name="was_successful" 
                     id="was_successful" 
                     [(ngModel)]="selectedRuta.was_successful"
+                    #wasSuccessfulCtrl="ngModel"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                     <option value="">Seleccionar...</option>
                     <option value="0">Sí</option>
@@ -157,10 +169,17 @@
                     name="start_latitude" 
                     id="start_latitude" 
                     [(ngModel)]="selectedRuta.start_latitude"
+                    #startLatCtrl="ngModel"
+                    required
+                    min="-90"
+                    max="90"
                     step="any"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
-                    placeholder="Latitud de inicio" 
-                    required="">
+                    placeholder="Latitud de inicio">
+                <div *ngIf="startLatCtrl.invalid && (startLatCtrl.dirty || startLatCtrl.touched)" class="text-red-500 text-xs mt-1">
+                    <div *ngIf="startLatCtrl.errors?.['required']">La latitud de inicio es obligatoria.</div>
+                    <div *ngIf="startLatCtrl.errors?.['min'] || startLatCtrl.errors?.['max']">El valor debe estar entre -90 y 90.</div>
+                </div>
                 </div>
 
                 <!-- Longitud de inicio -->
@@ -171,10 +190,17 @@
                     name="start_longitude" 
                     id="start_longitude" 
                     [(ngModel)]="selectedRuta.start_longitude"
+                    #startLngCtrl="ngModel"
+                    required
+                    min="-180"
+                    max="180"
                     step="any"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
-                    placeholder="Longitud de inicio" 
-                    required="">
+                    placeholder="Longitud de inicio">
+                <div *ngIf="startLngCtrl.invalid && (startLngCtrl.dirty || startLngCtrl.touched)" class="text-red-500 text-xs mt-1">
+                    <div *ngIf="startLngCtrl.errors?.['required']">La longitud de inicio es obligatoria.</div>
+                    <div *ngIf="startLngCtrl.errors?.['min'] || startLngCtrl.errors?.['max']">El valor debe estar entre -180 y 180.</div>
+                </div>
                 </div>
 
                 <!-- Latitud de fin -->
@@ -185,9 +211,17 @@
                     name="end_latitude" 
                     id="end_latitude" 
                     [(ngModel)]="selectedRuta.end_latitude"
+                    #endLatCtrl="ngModel"
+                    required
+                    min="-90"
+                    max="90"
                     step="any"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
                     placeholder="Latitud de fin">
+                <div *ngIf="endLatCtrl.invalid && (endLatCtrl.dirty || endLatCtrl.touched)" class="text-red-500 text-xs mt-1">
+                    <div *ngIf="endLatCtrl.errors?.['required']">La latitud de fin es obligatoria.</div>
+                    <div *ngIf="endLatCtrl.errors?.['min'] || endLatCtrl.errors?.['max']">El valor debe estar entre -90 y 90.</div>
+                </div>
                 </div>
 
                 <!-- Longitud de fin -->
@@ -198,9 +232,17 @@
                     name="end_longitude" 
                     id="end_longitude" 
                     [(ngModel)]="selectedRuta.end_longitude"
+                    #endLngCtrl="ngModel"
+                    required
+                    min="-180"
+                    max="180"
                     step="any"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
                     placeholder="Longitud de fin">
+                <div *ngIf="endLngCtrl.invalid && (endLngCtrl.dirty || endLngCtrl.touched)" class="text-red-500 text-xs mt-1">
+                    <div *ngIf="endLngCtrl.errors?.['required']">La longitud de fin es obligatoria.</div>
+                    <div *ngIf="endLngCtrl.errors?.['min'] || endLngCtrl.errors?.['max']">El valor debe estar entre -180 y 180.</div>
+                </div>
                 </div>
 
                 <!-- Descripción del problema -->
@@ -210,9 +252,14 @@
                     name="problem_description" 
                     id="problem_description" 
                     [(ngModel)]="selectedRuta.problem_description"
+                    #problemDescCtrl="ngModel"
                     rows="3"
+                    maxlength="255"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
                     placeholder="Describe cualquier problema encontrado..."></textarea>
+                <div *ngIf="problemDescCtrl.invalid && (problemDescCtrl.dirty || problemDescCtrl.touched)" class="text-red-500 text-xs mt-1">
+                    <div *ngIf="problemDescCtrl.errors?.['maxlength']">Máximo 255 caracteres.</div>
+                </div>
                 </div>
 
                 <!-- Comentarios -->
@@ -222,15 +269,21 @@
                     name="comments" 
                     id="comments" 
                     [(ngModel)]="selectedRuta.comments"
+                    #commentsCtrl="ngModel"
                     rows="3"
+                    maxlength="255"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
                     placeholder="Comentarios adicionales..."></textarea>
+                <div *ngIf="commentsCtrl.invalid && (commentsCtrl.dirty || commentsCtrl.touched)" class="text-red-500 text-xs mt-1">
+                    <div *ngIf="commentsCtrl.errors?.['maxlength']">Máximo 255 caracteres.</div>
+                </div>
                 </div>
             </div>
             <!-- Modal footer -->
             <div class="flex items-center p-4 md:pt-4 border-t border-gray-200 rounded-b dark:border-gray-600">
                 <button 
                 type="submit"
+                [disabled]="editForm.invalid"
                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 Guardar cambios
                 </button>
