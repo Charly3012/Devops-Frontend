@@ -44,8 +44,11 @@
           <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
             ID Vehículo
           </th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
             Acciones
+          </th>
+          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+            Ruta Asignada
           </th>
         </tr>
       </thead>
@@ -63,7 +66,7 @@
           <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
             {{ assignment.id_vehicle }}
           </td>
-          <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-center">
+          <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-left">
             <div class="relative inline-block text-left group">
               <button
                 type="button"
@@ -86,6 +89,15 @@
               </div>
             </div>
           </td>
+        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+        <span *ngIf="assignment.route">Sí tiene Ruta</span>
+        <span *ngIf="!assignment.route">
+            No tiene
+            <button (click)="asignarRuta(assignment.id_assignment)" class="ml-2 inline-block bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs">
+            Asignar Ruta
+            </button>
+        </span>
+        </td>
         </tr>
         <tr *ngIf="assignments.length === 0">
           <td colspan="5" class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-center text-gray-500">
@@ -144,7 +156,7 @@
 
   <div *ngIf="isModalOpen" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md mx-4">
-      <h2 class="text-2xl font-bold mb-6 text-gray-800">{{ isEditMode ? 'Edit Assignment' : 'Add New Assignment' }}</h2>
+      <h2 class="text-2xl font-bold mb-6 text-gray-800">{{ isEditMode ? 'Editar Asignación' : 'Añadir nueva Asignación' }}</h2>
       <form [formGroup]="assignmentForm" (ngSubmit)="saveAssignment()">
         <div class="mb-4">
           <label for="assignment_date" class="block text-gray-700 text-sm font-bold mb-2">Fecha Asignación:</label>

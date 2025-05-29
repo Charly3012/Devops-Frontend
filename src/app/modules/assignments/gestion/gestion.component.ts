@@ -182,4 +182,9 @@ export class GestionComponent implements OnInit {
   get formControls() {
     return this.assignmentForm.controls;
   }
+
+  asignarRuta(assignment:number){
+    console.log(assignment);
+  }
+
 }
