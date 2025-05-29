@@ -7,10 +7,12 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
+import { HttpClientModule } from '@angular/common/http';
 import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
 import { LoadingComponent } from './shared/components/loading/loading.component';
 import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
 import { ErrorHandlerInterceptor } from './core/interceptors/error-handler.interceptor';
+
 
 @NgModule({
   declarations: [
@@ -20,6 +22,7 @@ import { ErrorHandlerInterceptor } from './core/interceptors/error-handler.inter
   imports: [
     BrowserModule,
     CoreModule,
+    HttpClientModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
