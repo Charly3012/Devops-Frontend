@@ -1,9 +1,12 @@
 import { Component, OnInit, ViewChild,ElementRef, AfterViewInit} from '@angular/core';
-import { invitationCode } from '../../models/invitation-codes.models';
+import { createCodeRequest, invitationCode } from '../../models/invitation-codes.models';
 import { AdminService } from '../../services/admin.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { Modal } from 'flowbite';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { subscribe } from 'diagnostics_channel';
+import { LoadingService } from 'src/app/shared/services/loading.service';
 
 
 @Component({
@@ -14,23 +17,31 @@ import { Modal } from 'flowbite';
 export class InvitationCodesComponent implements OnInit, AfterViewInit {
   @ViewChild('addInvitationCodeModal') addInvCodeModalRef!: ElementRef;
 
-  private addInvitationCodeModal!:Modal
+  private addInvitationCodeModal!:Modal;
+  public invitationCodes?: invitationCode[]=[]
+  public today?: string;
+  public createCodeForm: FormGroup;
 
   constructor(
     private adminService: AdminService,
-    private toastService: ToastrService   
-
-  ) { }
+    private toastService: ToastrService,
+    private formBuilder: FormBuilder,
+  ) {
+    this.createCodeForm = this.formBuilder.group({
+      code: ['', Validators.required],
+      expires_at: ['', Validators.required]
+    });
+  }
 
   ngOnInit(): void {
     this.getInvitationCodes();
+    const now = new Date();
+    this.today = now.toISOString().split('T')[0]; // yyyy-MM-dd
   }
-ngAfterViewInit(): void {
+
+  ngAfterViewInit(): void {
     this.addInvitationCodeModal = new Modal(this.addInvCodeModalRef.nativeElement)
-}
-
-  invitationCodes?: invitationCode[]=[]
-
+  }
 
   getInvitationCodes() {
     this.adminService.getAllInvitationCodes().subscribe(
@@ -39,26 +50,44 @@ ngAfterViewInit(): void {
           this.invitationCodes = response.data;
         },
         error:(err: HttpErrorResponse) => {
-          // Mostrar que lgo salió mal
-          if (err.status >= 400 && err.status < 499) {
-            this.toastService.warning("Intente nuevamente", "Algo salió mal");
-            return;
-          }
-          if (err.status >= 500 && err.status < 599) {
-            this.toastService.warning("Intente nuevamente más tarde", "Error del servidor");
-            return;
-          }
+          return;
         }
-        
       }
     );
   }
+
+  //Add new invitation codes methods
   hideAddModal() {
     this.addInvitationCodeModal.hide();
+    this.createCodeForm.reset();
   }
-  addInvitationCode() {
+
+  showAddModal() {
     this.addInvitationCodeModal.show();
-
-
   }
+
+  addInvitationCodeRequest(){
+    if(this.createCodeForm.valid){
+      const dataForm = this.createCodeForm.value;
+      console.log(dataForm.expires_at);
+      const dataRequest: createCodeRequest = {
+        code : dataForm.code,
+        expires_at: new Date(`${dataForm.expires_at}T23:59:00.000Z`)
+      }
+      this.hideAddModal();
+      this.adminService.createInvitationCode(dataRequest).subscribe({
+        next: (response) => {
+          this.toastService.success('¡Código de invitación creado!');
+          this.getInvitationCodes();
+        },
+        error:(err: HttpErrorResponse) => {
+          return;
+        }
+      });
+    }else{
+      this.createCodeForm.markAllAsTouched();
+    }
+  }
+
+
 }

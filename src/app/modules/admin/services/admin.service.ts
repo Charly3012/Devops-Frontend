@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { invitationCodeListResponse } from '../models/invitation-codes.models';
+import { createCodeRequest, createCodeResponse, invitationCodeListResponse } from '../models/invitation-codes.models';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -17,5 +17,13 @@ export class AdminService {
 
   getAllInvitationCodes(): Observable<invitationCodeListResponse>{
     return this.httpClient.get<invitationCodeListResponse>(`${this.apiUrl}/invitationCode`);
+  }
+
+  createInvitationCode(data: createCodeRequest): Observable<createCodeResponse>{
+    return this.httpClient.post<createCodeResponse>(`${this.apiUrl}/invitationCode`, data);
+  }
+
+  deleteInvitationCode(id: number): Observable<any>{
+    return this.httpClient.delete<any>(`${this.apiUrl}/invitationCode/${id}`);
   }
 }
