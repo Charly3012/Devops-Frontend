@@ -18,7 +18,7 @@ const routes: Routes = [
   {
     path: 'menu',
     component: MainComponent,
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',

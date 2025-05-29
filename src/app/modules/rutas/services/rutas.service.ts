@@ -8,7 +8,7 @@ import { catchError, retry } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class RutasService {
-  private apiUrl :string= 'http://localhost:8000/api/routes';
+  private apiUrl :string= 'http://40.233.5.25/api/routes';
 
   constructor (private http : HttpClient ) { }
 
