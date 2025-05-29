@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { registerReponse, registerRequest } from '../../models/register.model';
 import { AuthService } from '../../services/auth.service';
 import { PasswordMatchValidator } from '../../Validators/password-match.validator';
+import { ReturnStatement } from '@angular/compiler';
 
 @Component({
   selector: 'app-register',
@@ -52,28 +53,10 @@ export class RegisterComponent implements OnInit {
         this.toastService.info("Redireccionando a la pestaña de incio de sesión...");
         setTimeout(() => {
           this.router.navigate(['/auth/login']);
-        }, 2500);
+        }, 1200);
       },
       error: (err: HttpErrorResponse) => {
-        console.log(err);
-        if(err.status >= 400 && err.status <= 499){
-          this.toastService.warning(err.error.message, 'Verifique los datos de formulario');
-          const specificErrors: { [key: string]: string[] } = err.error.errors;
-          if (specificErrors) {
-            Object.keys(specificErrors).forEach((field) => {
-              specificErrors[field].forEach((msg: string) => {
-                this.toastService.warning(msg, `Campo: ${field}`);
-              });
-            });
-          }
-
-          return;
-        }
-
-        if(err.status >= 500 && err.status <= 599){
-          this.toastService.error(err.error.message, 'Error interno: Intente de nuevo mas tarde');
-          return;
-        }
+        return;
       }
     });
 
