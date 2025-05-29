@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AssignmentService } from '../services/assignment.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { RutasService } from '../../rutas/services/rutas.service';
 
 @Component({
   selector: 'app-gestion',
@@ -21,10 +22,23 @@ export class GestionComponent implements OnInit {
   showDeleteModal: boolean = false;
   assignmentToDelete: number | null = null;
 
+  isRutaModalOpen: boolean = false;
+  rutaForm: any = {
+    name: '',
+    route_date: '',
+    start_latitude: '',
+    start_longitude: '',
+    end_latitude: '',
+    end_longitude: ''
+  };
+  rutaFormTouched: any = {};
+  currentAssignmentForRuta: number | null = null;
+
   constructor(
     private assignmentService: AssignmentService,
     private fb: FormBuilder,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private rutasService: RutasService
   ) {
     this.assignmentForm = this.fb.group({
       assignment_date: ['', [Validators.required, this.futureDateValidator()]],
@@ -183,8 +197,69 @@ export class GestionComponent implements OnInit {
     return this.assignmentForm.controls;
   }
 
-  asignarRuta(assignment:number){
-    console.log(assignment);
+  asignarRuta(assignmentId: number) {
+    this.currentAssignmentForRuta = assignmentId;
+    this.isRutaModalOpen = true;
+    this.rutaForm = {
+      name: '',
+      route_date: '',
+      start_latitude: '',
+      start_longitude: '',
+      end_latitude: '',
+      end_longitude: ''
+    };
+    this.rutaFormTouched = {};
   }
 
+  closeRutaModal() {
+    this.isRutaModalOpen = false;
+    this.currentAssignmentForRuta = null;
+    this.rutaForm = {
+      name: '',
+      route_date: '',
+      start_latitude: '',
+      start_longitude: '',
+      end_latitude: '',
+      end_longitude: ''
+    };
+    this.rutaFormTouched = {};
+  }
+
+  saveRuta() {
+    this.rutaFormTouched = {
+      name: true,
+      route_date: true,
+      start_latitude: true,
+      start_longitude: true,
+      end_latitude: true,
+      end_longitude: true
+    };
+    if (!this.rutaForm.name || this.rutaForm.name.length > 100) return;
+    if (!this.rutaForm.route_date) return;
+    if (this.rutaForm.start_latitude === '' || this.rutaForm.start_latitude < -90 || this.rutaForm.start_latitude > 90) return;
+    if (this.rutaForm.start_longitude === '' || this.rutaForm.start_longitude < -180 || this.rutaForm.start_longitude > 180) return;
+    if (this.rutaForm.end_latitude === '' || this.rutaForm.end_latitude < -90 || this.rutaForm.end_latitude > 90) return;
+    if (this.rutaForm.end_longitude === '' || this.rutaForm.end_longitude < -180 || this.rutaForm.end_longitude > 180) return;
+    if (this.currentAssignmentForRuta === null) return;
+    const ruta: any = {
+      id: 0,
+      id_assignment: this.currentAssignmentForRuta,
+      name: this.rutaForm.name,
+      route_date: this.rutaForm.route_date,
+      start_latitude: Number(this.rutaForm.start_latitude),
+      start_longitude: Number(this.rutaForm.start_longitude),
+      end_latitude: Number(this.rutaForm.end_latitude),
+      end_longitude: Number(this.rutaForm.end_longitude)
+    };
+    this.rutasService.createRuta(ruta).subscribe({
+      next: () => {
+        this.toastr.success('Ruta asignada exitosamente');
+        this.closeRutaModal();
+        this.loadAssignments(this.currentPage);
+      },
+      error: (error) => {
+        this.toastr.error('Error al asignar la ruta.');
+      }
+    });
+  }
 }
