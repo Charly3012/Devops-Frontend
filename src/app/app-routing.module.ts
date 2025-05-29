@@ -32,6 +32,8 @@ const routes: Routes = [
       {
         path: 'asignaciones', 
         loadChildren: () => import('./modules/assignments/assignments.module').then(m => m.AssignmentsModule) 
+      },
+      {
         path: 'conductores',
         loadChildren: () => import('./modules/conductores/conductores.module').then(m => m.ConductoresModule)
       },
