@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { createCodeRequest, createCodeResponse, invitationCodeListResponse } from '../models/invitation-codes.models';
+import { createCodeRequest, createCodeResponse, editCodeRequest, invitationCodeListResponse } from '../models/invitation-codes.models';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -25,5 +25,8 @@ export class AdminService {
 
   deleteInvitationCode(id: number): Observable<any>{
     return this.httpClient.delete<any>(`${this.apiUrl}/invitationCode/${id}`);
+  }
+  editInvitationCode(data: editCodeRequest, id: number): Observable<any>{
+    return this.httpClient.put<any>(`${this.apiUrl}/invitationCode/${id}`, data);
   }
 }

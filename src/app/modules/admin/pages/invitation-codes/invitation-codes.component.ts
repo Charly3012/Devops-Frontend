@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild,ElementRef, AfterViewInit} from '@angular/core';
-import { createCodeRequest, invitationCode } from '../../models/invitation-codes.models';
+import { createCodeRequest, editCodeRequest, invitationCode } from '../../models/invitation-codes.models';
 import { AdminService } from '../../services/admin.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
@@ -7,6 +7,8 @@ import { Modal } from 'flowbite';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { subscribe } from 'diagnostics_channel';
 import { LoadingService } from 'src/app/shared/services/loading.service';
+import { Observable } from 'rxjs';
+
 
 
 @Component({
@@ -17,13 +19,16 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
 export class InvitationCodesComponent implements OnInit, AfterViewInit {
   @ViewChild('addInvitationCodeModal') addInvCodeModalRef!: ElementRef;
   @ViewChild('deleteConfirmationModal') deleteInvCodeModalRef!: ElementRef;
+  @ViewChild('editInvitationCodeModal') editInvitationCodeModalRef!: ElementRef;
 
   private addInvitationCodeModal!:Modal;
   private deleteInvitationCodeModal!:Modal;
+  private editInvitationCodeModal!:Modal;
   public invitationCodes?: invitationCode[]=[]
   public today?: string;
   public createCodeForm: FormGroup;
   public selectedCode: number= 0;
+  public editCodeForm: FormGroup;
 
   constructor(
     private adminService: AdminService,
@@ -33,6 +38,12 @@ export class InvitationCodesComponent implements OnInit, AfterViewInit {
     this.createCodeForm = this.formBuilder.group({
       code: ['', Validators.required],
       expires_at: ['', Validators.required]
+    });
+
+    this.editCodeForm = this.formBuilder.group({
+      code: ['', Validators.required],
+      expires_at: ['', Validators.required],
+      used_status: ['', Validators.required]
     });
   }
 
@@ -45,6 +56,7 @@ export class InvitationCodesComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.addInvitationCodeModal = new Modal(this.addInvCodeModalRef.nativeElement)
     this.deleteInvitationCodeModal = new Modal(this.deleteInvCodeModalRef.nativeElement);
+    this.editInvitationCodeModal = new Modal(this.editInvitationCodeModalRef.nativeElement);
   }
 
   getInvitationCodes() {
@@ -116,4 +128,45 @@ export class InvitationCodesComponent implements OnInit, AfterViewInit {
       }
     });
   }
+  // Edit Modal
+  editShowModal(data: invitationCode) {
+    this.selectedCode = data.id;
+    this.editInvitationCodeModal.show();
+    const dateOnly = new Date(data.expires_at).toISOString().split('T')[0]; 
+    const actualData: any ={
+      code: data.code,
+      used_status: data.used_status ? "1" : "0",
+      expires_at: dateOnly
+    }
+    this.editCodeForm.setValue(actualData);
+  }
+  editHideModal() {
+
+    this.editInvitationCodeModal.hide();
+    this.selectedCode = 0;
+    this.editCodeForm.reset();
+  }
+  editCodeRequest() {
+    const id = this.selectedCode;
+    if(this.editCodeForm.valid){
+      const dataForm = this.editCodeForm.value;
+      const dataRequest : editCodeRequest = {
+        code: dataForm.code,
+        used_status: dataForm.used_status === "1" ? true : false,
+        expires_at: new Date(`${dataForm.expires_at}T23:59:00.000Z`)
+      }
+      this.editHideModal();
+      this.adminService.editInvitationCode(dataRequest, id).subscribe({
+        next: (response) => {
+          this.getInvitationCodes();
+          this.toastService.success('¡Código de invitación editado correctamente!');
+        },
+        error: () => {
+          return;
+        }
+      });
+    }
+    
+  }
+
 }

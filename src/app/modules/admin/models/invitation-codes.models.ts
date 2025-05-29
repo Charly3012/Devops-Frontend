@@ -30,4 +30,9 @@ export interface createCodeResponse{
   data: any,
   status: number
 }
+export interface editCodeRequest{
+  code: string,
+  used_status: boolean,
+  expires_at: Date
+}
 
