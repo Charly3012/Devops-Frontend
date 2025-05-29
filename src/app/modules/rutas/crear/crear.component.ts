@@ -12,19 +12,7 @@ import { NgForm } from '@angular/forms';
 })
 export class CrearComponent implements OnInit {
   rutas: Ruta[] = [];
-  error = '';
-
-  constructor(
-    private rutasService: RutasService,
-    private toastService: ToastrService
-  ) { }
-
-  ngOnInit(): void {
-    this.loadRutas();
-  }
-
-  // -------------------------- Modal -------------------------------------
-  selectedRuta: Ruta = {
+  selectedRuta: Ruta = {  // Ruta seleccionada para editar
     id: 0,
     id_assignment: 0,
     name: '',
@@ -36,37 +24,29 @@ export class CrearComponent implements OnInit {
     start_longitude: 0,
     end_latitude: 0,
     end_longitude: 0
-  }; // Ruta seleccionada para editar
-
+  };
   modal: ModalInterface | null = null;
+  deleteId: number | null = null;
 
-  openEditModal(ruta: Ruta): void {
-    // Crear una copia de la ruta para evitar modificar el original
-    this.selectedRuta = { ...ruta };
-    
-    // Mostrar el modal
-    const modalElement = document.getElementById('editModal');
-    if (modalElement) {
-      modalElement.classList.remove('hidden');
-      modalElement.classList.add('flex');
-      
-      // Agregar clase para animación
-      setTimeout(() => {
-        modalElement.style.opacity = '1';
-      }, 10);
-    }
+  constructor(
+    private rutasService: RutasService,
+    private toastService: ToastrService
+  ) { }
+
+  ngOnInit(): void {
+    this.loadRutas();
   }
-  closeModal(): void {
-    const modalElement = document.getElementById('editModal');
-    if (modalElement) {
-      // Transición suave antes de ocultar
-      modalElement.style.opacity = '0';
-      
-      setTimeout(() => {
-        modalElement.classList.add('hidden');
-        modalElement.classList.remove('flex');
-      }, 300); // Coincide con la transición CSS
-    }
+
+  // -------------------------- Solicitudes Backend -------------------------------------
+  loadRutas(): void {
+    this.rutasService.getRutas().subscribe({
+      next: (data) => {
+        this.rutas = data;
+      },
+      error: (error) => {
+        this.toastService.error("Error al actualizar la ruta");
+      }
+    });
   }
 
   updateRuta(form?: NgForm): void {
@@ -74,54 +54,25 @@ export class CrearComponent implements OnInit {
       this.toastService.error("Por favor corrige los errores del formulario.");
       return;
     }
-    // Aquí implementas la lógica para actualizar la ruta
-    console.log('Actualizando ruta:', this.selectedRuta);
-    // Ejemplo de actualización local
+
+    // Actualizar local
     const index = this.rutas.findIndex(r => r.id === this.selectedRuta.id);
     if (index !== -1) {
       this.rutas[index] = { ...this.selectedRuta };
     }
+    
     // Actualizar en el backend
-    this.rutasService.updateRuta(this.selectedRuta.id, this.selectedRuta).subscribe(
-      response => {
-        console.log('Ruta actualizada correctamente');
+    this.rutasService.updateRuta(this.selectedRuta.id, this.selectedRuta).subscribe({
+      next: (data) => {
         this.toastService.success("Ruta actualizada exitosamente");
         this.loadRutas();
       },
-      error => {
-        console.error('Error al actualizar la ruta')
-      }
-    )
-    // Cerrar el modal
-    this.closeModal();
-  }
-
-
-  // -------------------------- Solicitudes Backend -------------------------------------
-  // Actualizar una ruta
-  updateRutas(ruta: Ruta): void{
-    this.rutasService.updateRuta(ruta.id, ruta).subscribe({
-      next: (data) => {
-        console.log('Usuario actualizado correctamente');
-        this.loadRutas();
-      },
       error: (error) => {
-        console.error('Error al actualizar la ruta', error);
-      }
-    })
-  }
-
-  // Cargar todas las rutas
-  loadRutas(): void {
-    this.rutasService.getRutas().subscribe({
-      next: (data) => {
-        this.rutas = data;
-      },
-      error: (error) => {
-        this.error = error;
-        console.log('Error al cargar las rutas', error);
+        this.toastService.error("Error al actualizar la ruta");
       }
     });
+
+    this.closeEditModal();
   }
 
   createRuta(): void {
@@ -142,21 +93,56 @@ export class CrearComponent implements OnInit {
 
     this.rutasService.createRuta(newRuta).subscribe({
       next: (data) => {
-        console.log('Ruta creada:', data);
-        this.toastService.success("Ruta creada exitosamente");
+        this.toastService.success("Ruta creada");
         this.loadRutas();
       },
       error: (error) => {
-        this.error = error;
-        console.log('Error al crear ruta:', error)
+        this.toastService.error("Error al crear ruta");
       }
     })
   }
 
+  deleteRuta(id: number):void {
+    this.rutasService.deleteRuta(id).subscribe({
+      next: () => {
+        this.toastService.success("Ruta eliminada exitosamente");
+        this.loadRutas();
+      },
+      error: (error) => {
+        this.toastService.error("Error al eliminar ruta");
+      }
+    })
+  }
+
+  // -------------------------- Modal Edit -------------------------------------
+  openEditModal(ruta: Ruta): void {
+    this.selectedRuta = { ...ruta };
+    
+    // Mostrar el modal
+    const modalElement = document.getElementById('editModal');
+    if (modalElement) {
+      modalElement.classList.remove('hidden');
+      modalElement.classList.add('flex');
+      
+      setTimeout(() => {
+        modalElement.style.opacity = '1';
+      }, 10);
+    }
+  }
+
+  closeEditModal(): void {
+    const modalElement = document.getElementById('editModal');
+    if (modalElement) {
+      modalElement.style.opacity = '0';
+      
+      setTimeout(() => {
+        modalElement.classList.add('hidden');
+        modalElement.classList.remove('flex');
+      }, 300);
+    }
+  }
 
   // -------------------------- Modal Eliminar ------------------------------------- 
-  deleteId: number | null = null;
-
   openDeleteModal(id: number): void {
     this.deleteId = id;
     const modalElement = document.getElementById('deleteModal');
@@ -178,20 +164,6 @@ export class CrearComponent implements OnInit {
       this.deleteRuta(this.deleteId);
       this.closeDeleteModal();
     }
-  }
-
-  // Eliminar una ruta
-  deleteRuta(id: number):void {
-    this.rutasService.deleteRuta(id).subscribe({
-      next: () => {
-        this.toastService.success("Ruta eliminada exitosamente");
-        this.loadRutas();
-      },
-      error: (error) => {
-        this.toastService.error("Error al eliminar ruta");
-        this.error = error;
-      }
-    })
   }
 
 }
