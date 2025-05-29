@@ -1,6 +1,6 @@
 <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
   <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
-    <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg ">
       <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
         <div class="w-full md:w-1/2">
           <form class="flex items-center">
@@ -28,7 +28,7 @@
             <div id="actionsDropdown" class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
                 <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="actionsDropdownButton">
                 <li>
-                    <a (click)="deleteAllDrivers()" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">Borrar todo</a>
+                    <a (click)="confirmarEliminarTodos()" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">Borrar todo</a>
                 </li>
                 </ul>
             </div>
@@ -62,7 +62,7 @@
         </div>
       </div>
         
-      <div class="overflow-x-auto overflow-y-visible border rounded-lg">
+      <div class="overflow-visible border rounded-lg">
         <table class="min-w-[800px] w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -85,7 +85,7 @@
                 <td class="px-4 py-3">{{ driver.birth_date | date }}</td>
                 <td class="px-4 py-3">{{ driver.monthly_salary | currency }}</td>
                 <td class="px-4 py-3">{{ driver.system_entry_date | date }}</td>
-                <td class="px-4 py-3 flex justify-end relative">
+                <td class="px-4 py-3 flex justify-end relative overflow-visible">
                 <button
                     type="button"
                     id="dropdown-button-{{ driver.id_driver }}"
@@ -112,7 +112,7 @@
                     </li>
                     </ul>
                     <div class="py-1">
-                    <a (click)="deleteDriver(driver.id_driver)" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer">Eliminar</a>
+                    <a (click)="confirmarEliminarIndividual(driver)" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer">Eliminar</a>
                     </div>
                 </div>
                 </td>
@@ -124,6 +124,27 @@
     </div>
   </div>
 </section>
+
+<div *ngIf="mostrarConfirmacion" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+      ¿Deseas eliminar {{ modoEliminarTodo ? 'todos los conductores' : 'este conductor' }}?
+    </h2>
+    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+      Esta acción no se puede deshacer.
+    </p>
+    <div class="flex justify-end space-x-3">
+      <button (click)="mostrarConfirmacion = false"
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded hover:bg-gray-200 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600">
+        Cancelar
+      </button>
+      <button (click)="eliminarConfirmado()"
+              class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700">
+        Eliminar
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- Modal -->
 <div *ngIf="mostrarModal" class="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-black bg-opacity-50">

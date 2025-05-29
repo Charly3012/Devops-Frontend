@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DriverService } from '../services/driver.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-gestion',
@@ -19,10 +20,14 @@ export class GestionComponent implements OnInit {
   searchTerm: string = '';
   orderDirection: 'asc' | 'desc' = 'asc';
   dropdownOpen: number | null = null;
+  mostrarConfirmacion = false;
+  modoEliminarTodo = false;
+  conductorAEliminar: any = null;
 
   constructor(
     private fb: FormBuilder,
-    private driverService: DriverService
+    private driverService: DriverService,
+    private toastr: ToastrService
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -47,7 +52,10 @@ export class GestionComponent implements OnInit {
         this.drivers = res;
         this.filterDrivers();
       },
-      error: (err) => console.error('Error al cargar conductores:', err)
+      error: (err) => {
+      console.error('Error al cargar conductores:', err);
+      this.toastr.error('No se pudieron cargar los conductores');
+    }
     });
   }
 
@@ -72,6 +80,51 @@ export class GestionComponent implements OnInit {
     this.drivers = filtered;
   }
 
+
+  confirmarEliminarTodos(): void {
+  this.modoEliminarTodo = true;
+  this.mostrarConfirmacion = true;
+}
+
+confirmarEliminarIndividual(driver: any): void {
+  this.modoEliminarTodo = false;
+  this.conductorAEliminar = driver;
+  this.mostrarConfirmacion = true;
+}
+
+eliminarConfirmado(): void {
+  if (this.modoEliminarTodo) {
+    const deleteRequests = this.drivers.map(d =>
+      this.driverService.delete(d.id_driver).toPromise()
+    );
+
+    Promise.all(deleteRequests)
+      .then(() => {
+        this.toastr.success('Todos los conductores fueron eliminados');
+        this.loadDrivers();
+        this.mostrarConfirmacion = false;
+      })
+      .catch(() => {
+        this.toastr.error('No se pudieron eliminar todos los conductores');
+        this.mostrarConfirmacion = false;
+      });
+
+  } else if (this.conductorAEliminar) {
+    this.driverService.delete(this.conductorAEliminar.id_driver).subscribe({
+      next: () => {
+        this.toastr.success('Conductor eliminado');
+        this.loadDrivers();
+        this.mostrarConfirmacion = false;
+      },
+      error: () => {
+        this.toastr.error('No se pudo eliminar el conductor');
+        this.mostrarConfirmacion = false;
+      }
+    });
+  }
+}
+
+
   toggleOrder(): void {
     this.orderDirection = this.orderDirection === 'asc' ? 'desc' : 'asc';
     this.filterDrivers();
@@ -86,10 +139,13 @@ export class GestionComponent implements OnInit {
 
     Promise.all(deleteRequests)
       .then(() => {
-        console.log('Todos los conductores eliminados');
+        this.toastr.success('Todos los conductores fueron eliminados');
         this.loadDrivers();
       })
-      .catch(err => console.error('Error al eliminar todos:', err));
+      .catch(err => {
+      console.error('Error al eliminar todos:', err);
+      this.toastr.error('No se pudieron eliminar todos los conductores');
+     });
   }
 
   goToPage(page: number): void {
@@ -111,8 +167,14 @@ export class GestionComponent implements OnInit {
         this.modoEdicion = false;
         this.conductorEditando = null;
         this.loadDrivers();
-      },
-      error: (err) => console.error('Error:', err)
+        this.toastr.success(this.modoEdicion
+        ? 'Conductor actualizado correctamente'
+        : 'Conductor registrado correctamente');
+        },
+      error: (err) => {
+      console.error('Error:', err);
+      this.toastr.error('Ocurrió un error al guardar el conductor');
+      }
     });
   }
 
@@ -143,10 +205,13 @@ export class GestionComponent implements OnInit {
     if (confirm('¿Estás seguro de que deseas eliminar este conductor?')) {
       this.driverService.delete(id).subscribe({
         next: () => {
-          console.log('Conductor eliminado:', id);
+          this.toastr.success('Conductor eliminado');
           this.loadDrivers();
         },
-        error: (err) => console.error('Error al eliminar conductor:', err)
+        error: (err) => {
+        console.error('Error al eliminar conductor:', err);
+        this.toastr.error('No se pudo eliminar el conductor');
+        }
       });
     }
   }
