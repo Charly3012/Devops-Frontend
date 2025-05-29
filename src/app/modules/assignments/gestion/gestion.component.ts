@@ -45,7 +45,7 @@ export class GestionComponent implements OnInit {
         this.lastPage = response.data.last_page;
       },
       error => {
-        console.error('Error loading assignments:', error);
+        console.error('Error al cargar asignaciones:', error);
         this.toastr.error('No se pudieron cargar las asignaciones.');
       }
     );
@@ -99,7 +99,7 @@ export class GestionComponent implements OnInit {
     if (this.isEditMode && this.currentAssignmentId !== null) {
       this.assignmentService.updateAssignment(this.currentAssignmentId, this.assignmentForm.value).subscribe(
         response => {
-          this.toastr.success(response.message);
+          this.toastr.success('Asignación actualizada exitosamente');
           this.loadAssignments(this.currentPage);
           this.closeModal();
         },
@@ -108,7 +108,7 @@ export class GestionComponent implements OnInit {
     } else {
       this.assignmentService.createAssignment(this.assignmentForm.value).subscribe(
         response => {
-          this.toastr.success(response.message);
+          this.toastr.success('Asignación creada exitosamente');
           this.loadAssignments(this.currentPage);
           this.closeModal();
         },
@@ -143,12 +143,12 @@ export class GestionComponent implements OnInit {
     if (this.assignmentToDelete !== null) {
       this.assignmentService.deleteAssignment(this.assignmentToDelete).subscribe(
         response => {
-          this.toastr.success(response.message);
+          this.toastr.success("Asignación eliminada exitosamente.");
           this.loadAssignments(this.currentPage);
         },
         error => {
-          console.error('Error deleting assignment:', error);
-          this.toastr.error('No se pudo eliminar la asignación.');
+          //console.error('Error al eliminar la asignación:', error);
+          this.toastr.error('Error al eliminar la asignación.');
         }
       );
     }
@@ -169,7 +169,7 @@ export class GestionComponent implements OnInit {
           this.lastPage = 1;
         },
         error => {
-          console.error('Error searching assignment:', error);
+          console.error('Error encontrando la asifnación:', error);
           this.assignments = [];
           this.toastr.error('Asignación no encontrada.');
         }
