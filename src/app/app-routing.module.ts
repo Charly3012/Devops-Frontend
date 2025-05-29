@@ -30,6 +30,8 @@ const routes: Routes = [
         loadChildren: () => import('./modules/home/home.module').then(m => m.HomeModule)
       },
       {
+        path: 'asignaciones', 
+        loadChildren: () => import('./modules/assignments/assignments.module').then(m => m.AssignmentsModule) 
         path: 'conductores',
         loadChildren: () => import('./modules/conductores/conductores.module').then(m => m.ConductoresModule)
       },
@@ -48,9 +50,6 @@ const routes: Routes = [
     redirectTo: 'menu/home',
     pathMatch: 'full'
   },
-
-
-
   {
     path: '**',
     redirectTo: 'menu/home'
