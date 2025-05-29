@@ -66,6 +66,7 @@
         <table class="min-w-[800px] w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
+              <th class="px-4 py-3">ID Conductor</th>
               <th class="px-4 py-3">Nombre</th>
               <th class="px-4 py-3">Apellido</th>
               <th class="px-4 py-3">CURP</th>
@@ -78,6 +79,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let driver of drivers" class="border-b dark:border-gray-700 relative">
+                <td class="px-4 py-3">{{ driver.id_driver }}</td>
                 <td class="px-4 py-3">{{ driver.name }}</td>
                 <td class="px-4 py-3">{{ driver.last_name }}</td>
                 <td class="px-4 py-3">{{ driver.curp }}</td>

@@ -69,6 +69,7 @@
                 <table class="min-w-[800px] w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
+                            <th scope="col" class="px-4 py-3">ID Vehículo</th>
                             <th scope="col" class="px-4 py-3">Marca</th>
                             <th scope="col" class="px-4 py-3">Modelo</th>
                             <th scope="col" class="px-4 py-3">VIN</th>
@@ -83,6 +84,7 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let vehicle of vehicles" class="border-b dark:border-gray-700 relative">
+                            <td class="px-4 py-3">{{ vehicle.id_vehicle }}</td>
                             <td class="px-4 py-3">{{ vehicle.brand }}</td>
                             <td class="px-4 py-3">{{ vehicle.model }}</td>
                             <td class="px-4 py-3">{{ vehicle.vin }}</td>
