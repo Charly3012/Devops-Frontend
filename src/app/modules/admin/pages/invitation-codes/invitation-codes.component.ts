@@ -16,11 +16,14 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
 })
 export class InvitationCodesComponent implements OnInit, AfterViewInit {
   @ViewChild('addInvitationCodeModal') addInvCodeModalRef!: ElementRef;
+  @ViewChild('deleteConfirmationModal') deleteInvCodeModalRef!: ElementRef;
 
   private addInvitationCodeModal!:Modal;
+  private deleteInvitationCodeModal!:Modal;
   public invitationCodes?: invitationCode[]=[]
   public today?: string;
   public createCodeForm: FormGroup;
+  public selectedCode: number= 0;
 
   constructor(
     private adminService: AdminService,
@@ -41,6 +44,7 @@ export class InvitationCodesComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.addInvitationCodeModal = new Modal(this.addInvCodeModalRef.nativeElement)
+    this.deleteInvitationCodeModal = new Modal(this.deleteInvCodeModalRef.nativeElement);
   }
 
   getInvitationCodes() {
@@ -69,7 +73,6 @@ export class InvitationCodesComponent implements OnInit, AfterViewInit {
   addInvitationCodeRequest(){
     if(this.createCodeForm.valid){
       const dataForm = this.createCodeForm.value;
-      console.log(dataForm.expires_at);
       const dataRequest: createCodeRequest = {
         code : dataForm.code,
         expires_at: new Date(`${dataForm.expires_at}T23:59:00.000Z`)
@@ -89,5 +92,28 @@ export class InvitationCodesComponent implements OnInit, AfterViewInit {
     }
   }
 
-
+  // Delete invitation code 
+  deleteShowModal(id: number) {
+    this.deleteInvitationCodeModal.show();
+    this.selectedCode = id;
+  }
+  deleteHideModal() {
+    this.deleteInvitationCodeModal.hide();
+    this.selectedCode = 0;
+  }
+  deleteCodeRequest() {
+    const id = this.selectedCode
+    this.deleteHideModal();
+    this.adminService.deleteInvitationCode(id).subscribe({
+      next: (response) => {
+        this.getInvitationCodes();
+        this.toastService.success('¡Código de invitación eliminado correctamente!');
+        
+      },
+      error: () => {
+        this.getInvitationCodes();
+        return;
+      }
+    });
+  }
 }
