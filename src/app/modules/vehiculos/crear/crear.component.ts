@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { VehicleService } from '../services/vehicle.service';
 import { environment } from 'src/environments/environment';
 import { HostListener } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-crear',
@@ -21,12 +22,15 @@ export class CrearComponent implements OnInit {
   originalVehicles: any[] = []; 
   searchTerm: string = '';
   orderDirection: 'asc' | 'desc' = 'asc';
-
+  mostrarConfirmacion = false;
+  modoEliminarTodo = false;
+  vehiculoAEliminar: any = null;
 
 
   constructor(
     private fb: FormBuilder,
-    private vehicleService: VehicleService
+    private vehicleService: VehicleService,
+    private toastr: ToastrService
   ) {
     this.form = this.fb.group({
       brand: ['', Validators.required],
@@ -53,11 +57,55 @@ export class CrearComponent implements OnInit {
       this.currentPage      = res.current_page;   
       this.filterVehicles();
     },
-    error: (err) => console.error('Error al cargar vehículos:', err)
+    error: (err) => {
+      console.error('Error al cargar vehículos:', err);
+      this.toastr.error('No se pudieron cargar los vehículos');
+    }
   });
 }
 
+  confirmarEliminarTodo(): void {
+  this.modoEliminarTodo = true;
+  this.mostrarConfirmacion = true;
+  }
 
+  confirmarEliminarIndividual(vehicle: any): void {
+    this.modoEliminarTodo = false;
+    this.vehiculoAEliminar = vehicle;
+    this.mostrarConfirmacion = true;
+  }
+
+  eliminarConfirmado(): void {
+  if (this.modoEliminarTodo) {
+    const deleteRequests = this.vehicles.map(v =>
+      this.vehicleService.delete(v.id_vehicle).toPromise()
+    );
+
+    Promise.all(deleteRequests)
+      .then(() => {
+        this.toastr.success('Todos los vehículos fueron eliminados');
+        this.loadVehicles(this.currentPage);
+        this.mostrarConfirmacion = false;
+      })
+      .catch(() => {
+        this.toastr.error('No se pudieron eliminar todos los vehículos');
+        this.mostrarConfirmacion = false;
+      });
+
+  } else if (this.vehiculoAEliminar) {
+    this.vehicleService.delete(this.vehiculoAEliminar.id_vehicle).subscribe({
+      next: () => {
+        this.toastr.success('Vehículo eliminado');
+        this.loadVehicles(this.currentPage);
+        this.mostrarConfirmacion = false;
+      },
+      error: () => {
+        this.toastr.error('No se pudo eliminar el vehículo');
+        this.mostrarConfirmacion = false;
+      }
+    });
+  }
+}
 
 
   filterVehicles(): void {
@@ -100,10 +148,13 @@ export class CrearComponent implements OnInit {
 
   Promise.all(deleteRequests)
     .then(() => {
-      console.log('Todos los vehículos eliminados');
+      this.toastr.success('Todos los vehículos fueron eliminados');
       this.loadVehicles(this.currentPage);
     })
-    .catch(err => console.error('Error al eliminar todos:', err));
+    .catch(err => {
+      console.error('Error al eliminar todos:', err);
+      this.toastr.error('No se pudieron eliminar todos los vehículos');
+    });
   }
 
   goToPage(page: number): void {
@@ -151,8 +202,12 @@ export class CrearComponent implements OnInit {
         this.loadVehicles(this.currentPage);
         //this.currentPage = 1;
         //this.loadVehicles(1);
+        this.toastr.success('Vehículo guardado correctamente');
       },
-      error: (err) => console.error('Error:', err)
+      error: (err) => {
+        console.error('Error:', err);
+        this.toastr.error('Ocurrió un error al guardar el vehículo');
+      }
     });
   }
 
@@ -191,10 +246,13 @@ export class CrearComponent implements OnInit {
     if (confirm('¿Estás seguro de que deseas eliminar este vehículo?')) {
       this.vehicleService.delete(id).subscribe({
         next: () => {
-          console.log('Vehículo eliminado:', id);
+          this.toastr.success('Vehículo eliminado');
           this.loadVehicles(this.currentPage);
         },
-        error: (err) => console.error('Error al eliminar vehículo:', err)
+        error: (err) => {
+          console.error('Error al eliminar vehículo:', err);
+          this.toastr.error('No se pudo eliminar el vehículo');
+        }
       });
     }
   }
