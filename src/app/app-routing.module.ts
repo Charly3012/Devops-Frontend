@@ -17,6 +17,10 @@ const routes: Routes = [
       {
         path: 'home',
         loadChildren: () => import('./modules/home/home.module').then(m => m.HomeModule)
+      },
+      {
+        path: 'assignments', 
+        loadChildren: () => import('./modules/assignments/assignments.module').then(m => m.AssignmentsModule) 
       }
     ]
   },
@@ -25,6 +29,7 @@ const routes: Routes = [
     redirectTo: 'menu/home',
     pathMatch: 'full'
   },
+
   {
     path: '**',
     redirectTo: 'menu/home'
