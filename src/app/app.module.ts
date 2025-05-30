@@ -12,7 +12,6 @@ import { LoadingComponent } from './shared/components/loading/loading.component'
 import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
 import { ErrorHandlerInterceptor } from './core/interceptors/error-handler.interceptor';
 
-
 @NgModule({
   declarations: [
     AppComponent,

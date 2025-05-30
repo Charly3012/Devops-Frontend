@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+    
+    environment {
+        FRONTEND_SERVER = "139.177.97.29"
+        SERVER_USER = "ubuntu"
+        DEPLOY_PATH = "/var/www/html"
+    }
+
+    stages {
+        stage('Copiar artifact del job de build') {
+            steps {
+                copyArtifacts(
+                    projectName: 'Frontend-BUILD',
+                    selector: lastSuccessful()
+                )
+            }
+        }
+
+        stage('Desplegar en servidor frontendDeploy') {
+            steps {
+                sh """
+                ssh -i ~/.ssh/id_ed25519_front ${SERVER_USER}@${FRONTEND_SERVER} "sudo rm -rf ${DEPLOY_PATH}/*"
+                ssh -i ~/.ssh/id_ed25519_front ${SERVER_USER}@${FRONTEND_SERVER} "sudo mkdir -p ${DEPLOY_PATH} && sudo chown ${SERVER_USER}:${SERVER_USER} ${DEPLOY_PATH}"
+                scp -i ~/.ssh/id_ed25519_front -r dist/mi-flotilla/* ${SERVER_USER}@${FRONTEND_SERVER}:${DEPLOY_PATH}/
+                """
+            }
+        }
+    }
+}

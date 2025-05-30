@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    environment {
+        NODE_VERSION = "Node_18"
+    }
+
+    tools {
+        nodejs "${NODE_VERSION}"
+    }
+
+    stages {
+        stage('Instalar dependencias') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Build Angular') {
+            steps {
+                sh 'npx ng build --configuration production'
+            }
+        }
+
+        stage('Guardar artefacto') {
+            steps {
+                archiveArtifacts artifacts: 'dist/**', allowEmptyArchive: false
+            }
+        }
+    }
+}
