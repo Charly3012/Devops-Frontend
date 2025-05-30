@@ -11,7 +11,7 @@ pipeline {
         stage('Copiar artifact del job de build') {
             steps {
                 copyArtifacts(
-                    projectName: 'Build-Frontend',
+                    projectName: 'Frontend-BUILD',
                     selector: lastSuccessful()
                 )
             }
