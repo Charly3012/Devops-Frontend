@@ -32,6 +32,22 @@ const routes: Routes = [
       {
         path: 'admin',
         loadChildren: () => import('./modules/admin/admin.module').then(m => m.AdminModule)
+      },
+      {
+        path: 'asignaciones', 
+        loadChildren: () => import('./modules/assignments/assignments.module').then(m => m.AssignmentsModule) 
+      },
+      {
+        path: 'conductores',
+        loadChildren: () => import('./modules/conductores/conductores.module').then(m => m.ConductoresModule)
+      },
+       {
+        path: 'rutas',
+        loadChildren: () => import('./modules/rutas/rutas.module').then(m => m.RutasModule)
+      },
+      { 
+        path: 'vehiculos', 
+        loadChildren: () => import('./modules/vehiculos/vehiculos.module').then(m => m.VehiculosModule) 
       }
     ]
   },

@@ -20,6 +20,7 @@ import { ErrorHandlerInterceptor } from './core/interceptors/error-handler.inter
   imports: [
     BrowserModule,
     CoreModule,
+    HttpClientModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
